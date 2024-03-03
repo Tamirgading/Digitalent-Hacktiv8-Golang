@@ -1,1 +1,11 @@
-package sesi6_belajar_gin
+package main
+
+import (
+	"sesi6-belajar-gin/routers"
+)
+
+func main() {
+	var PORT = ":8080"
+
+	routers.StartServer().Run(PORT)
+}
