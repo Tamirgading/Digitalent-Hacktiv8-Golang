@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Air dan Angin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .status {
+            margin: 10px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Status Air dan Angin</h1>
+    <div class="container">
+        <div class="status">
+            <h2>Status Air</h2>
+            <p>Value: {{.Water}} m</p>
+            <p>Status: {{getStatusText .Water "water"}}</p>
+        </div>
+        <div class="status">
+            <h2>Status Angin</h2>
+            <p>Value: {{.Wind}} m/s</p>
+            <p>Status: {{getStatusText .Wind "wind"}}</p>
+        </div>
+    </div>
+    <script>
+        setInterval(function() {
+            location.reload();
+        }, 15000); // Reload halaman setiap 15 detik
+    </script>
+</body>
+</html>
