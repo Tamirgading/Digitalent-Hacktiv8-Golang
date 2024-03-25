@@ -1,14 +1,16 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	_ "project-pertama/lib"
 	"project-pertama/model"
 	"project-pertama/repository"
 	"project-pertama/util"
+	_"strconv"
 
 	"github.com/gin-gonic/gin"
-	_"github.com/google/uuid"
+	_ "github.com/google/uuid"
 	_ "github.com/pelletier/go-toml/query"
 )
 
@@ -51,4 +53,14 @@ func (pc *personController) GetAll(ctx *gin.Context){
 		return
 	}
 	ctx.JSON(http.StatusOK, util.CreateResponse(true, persons, ""))
+}
+func (pc *personController) Delete(ctx *gin.Context){
+	idString := ctx.Param("id")
+	fmt.Println(idString)
+	err := pc.personRepository.Delete(idString)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, util.CreateResponse(false, nil, err.Error()))
+		return
+	}
+	ctx.JSON(http.StatusOK, util.CreateResponse(true, nil, ""))
 }

@@ -15,7 +15,7 @@ func main(){
 	if err != nil {
 		panic(err)
 	}
-	err = db.AutoMigrate(&model.Person{}, model.Product{})
+	err = db.AutoMigrate(&model.Person{}, &model.CreditCard{})
 	if err != nil {
 		panic(err)
 	}
@@ -26,6 +26,7 @@ func main(){
 
 	ginEngine.GET("/person", personController.GetAll)
 	ginEngine.POST("/person", personController.Create)
+	ginEngine.DELETE("/person/:id", personController.Delete)
 
 	err = ginEngine.Run("localhost:8082")
 	if err != nil {
