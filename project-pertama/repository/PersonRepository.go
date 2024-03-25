@@ -28,7 +28,7 @@ func (pr *personRepository) Create(newPerson model.Person) (model.Person, error)
 func (pr *personRepository) GetAll() ([]model.Person, error){
 	var persons = []model.Person{}
 
-	tx := pr.db.Unscoped().Find(&persons)
+	tx := pr.db.Preload("Cards").Find(&persons)
 	return persons, tx.Error
 }
 
