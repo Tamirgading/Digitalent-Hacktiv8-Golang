@@ -15,9 +15,54 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:8080",
-    "basePath": "/api/v1",
-    "paths": {},
+    "host": "localhost:8082",
+    "paths": {
+        "/person": {
+            "get": {
+                "description": "get all person",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "person"
+                ],
+                "summary": "Get All Person",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Person"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.Person": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        }
+    },
     "securityDefinitions": {
         "BasicAuth": {
             "type": "basic"

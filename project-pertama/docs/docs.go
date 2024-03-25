@@ -23,7 +23,53 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {},
+    "paths": {
+        "/person": {
+            "get": {
+                "description": "get all person",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "person"
+                ],
+                "summary": "Get All Person",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Person"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.Person": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        }
+    },
     "securityDefinitions": {
         "BasicAuth": {
             "type": "basic"
@@ -38,8 +84,8 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/api/v1",
+	Host:             "localhost:8082",
+	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Swagger Example API",
 	Description:      "This is a sample server celler server.",

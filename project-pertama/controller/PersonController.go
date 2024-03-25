@@ -7,7 +7,7 @@ import (
 	"project-pertama/model"
 	"project-pertama/repository"
 	"project-pertama/util"
-	_"strconv"
+	_ "strconv"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/google/uuid"
@@ -46,6 +46,15 @@ func (pc *personController) Create(ctx *gin.Context){
 	ctx.JSON(http.StatusOK, util.CreateResponse(true, createdPerson, ""))
 }
 
+// GetAll Person godoc
+// @Summary      Get All Person
+// @Schemes
+// @Description  get all person
+// @Tags         person
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  []model.Person
+// @Router       /person [get]
 func (pc *personController) GetAll(ctx *gin.Context){
 	persons, err := pc.personRepository.GetAll()
 	if err != nil {
