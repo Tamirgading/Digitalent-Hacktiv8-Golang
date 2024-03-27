@@ -8,6 +8,7 @@ import (
 	"project-pertama/repository"
 	"project-pertama/util"
 	_ "strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/google/uuid"
@@ -56,6 +57,15 @@ func (pc *personController) Create(ctx *gin.Context){
 // @Success      200  {object}  []model.Person
 // @Router       /person [get]
 func (pc *personController) GetAll(ctx *gin.Context){
+	username, password, ok := ctx.Request.BasicAuth()
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, util.CreateResponse(false, nil, "unauthorized"))
+		return
+	}
+	if username != "admin" || password != "12345"{
+		ctx.JSON(http.StatusUnauthorized, util.CreateResponse(false, nil, "Wrong username / password"))
+		return
+	}
 	persons, err := pc.personRepository.GetAll()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, util.CreateResponse(false, nil, err.Error()))

@@ -47,8 +47,13 @@ func main(){
 
 	ginEngine := gin.Default()
 
-	ginEngine.GET("/person", personController.GetAll)
-	ginEngine.POST("/person", personController.Create)
+	personGroup := ginEngine.Group("/person", gin.BasicAuth(gin.Accounts{
+		"admin": "12345",
+		"budi": "golang_mantap",
+	}))
+
+	personGroup.GET("/person", personController.GetAll)
+	personGroup.POST("/person", personController.Create)
 	ginEngine.DELETE("/person/:id", personController.Delete)
 
 	ginEngine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

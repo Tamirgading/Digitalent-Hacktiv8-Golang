@@ -1,28 +1,46 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	_"path"
+	"time"
 )
-type Response struct{
-	Success bool `json:"success"`
-	Data []Person `json:"data"`
-	Error string `json:"error"`
+
+type Response struct {
+	Success bool     `json:"success"`
+	Data    []Person `json:"data"`
+	Error   string   `json:"error"`
 }
-type Person struct{
-	Id int `json:"id"`
-	Name string `json:"name"`
-	Address string `json:"address"`
-	UUID string `json:"UUID"`
-	Cards any `json:"Cards"`
-	DeletedAt any `json:"DeletedAt"`
+
+type Person struct {
+	Id        int    `json:"id"`
+	Name      string `json:"name"`
+	Address   string `json:"address"`
+	UUID      string `json:"UUID"`
+	Cards     []CreditCard `json:"Cards"`
+	DeletedAt interface{} `json:"DeletedAt"`
+}
+
+type CreditCard struct {
+	CardNumber string `json:"cardNumber"`
+	PersonUUID string `json:"personUUID"`
 }
 
 func main() {
-	req, err := http.NewRequest("GET", "http://localhost:8082/person", nil)
+	//post()
+	get()
+}
+
+func post(){
+	var data string = `
+	{
+		"name": "tegar",
+		"address": "lampung"
+	}`
+	req, err := http.NewRequest("POST", "http://localhost:8082/person", bytes.NewBuffer([]byte(data)))
 	if err != nil {
 		panic(err)
 	}
@@ -32,7 +50,27 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	dataByte, err:=  io.ReadAll(response.Body)
+	resultByte, err := io.ReadAll(response.Body)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(resultByte))
+}
+
+func get(){
+	req, err := http.NewRequest("GET", "http://localhost:8082/person", nil)
+	if err != nil {
+		panic(err)
+	}
+	client := http.Client{
+		Timeout: 1 * time.Second,
+	}
+
+	response, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	dataByte, err := io.ReadAll(response.Body)
 	if err != nil {
 		panic(err)
 	}
@@ -42,18 +80,5 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(r.Data)
-	p, ok := r.Data.([]any)
-	if !ok {
-		panic("not slice")
-	}
-
-	for _, v := range p {
-		d, ok := v.(map[string]any)
-		if !ok {
-			panic("not map")
-		}
-		fmt.Println(d)
-	}
-	fmt.Println(p)
+	fmt.Println(r)
 }
