@@ -52,8 +52,8 @@ func main(){
 		"budi": "golang_mantap",
 	}))
 
-	personGroup.GET("/person", personController.GetAll)
-	personGroup.POST("/person", personController.Create)
+	personGroup.GET("/", personController.GetAll)
+	personGroup.POST("/", personController.Create)
 	ginEngine.DELETE("/person/:id", personController.Delete)
 
 	ginEngine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

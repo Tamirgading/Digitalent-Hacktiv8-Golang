@@ -2,11 +2,14 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
+
+	"github.com/sony/gobreaker"
 )
 
 type Response struct {
@@ -31,7 +34,11 @@ type CreditCard struct {
 
 func main() {
 	//post()
-	get()
+	for {
+		time.Sleep(1 * time.Second)
+		result, err := get()
+		log.Println(result, err)
+	}
 }
 
 func post(){
@@ -57,28 +64,47 @@ func post(){
 	fmt.Println(string(resultByte))
 }
 
-func get(){
-	req, err := http.NewRequest("GET", "http://localhost:8082/person", nil)
-	if err != nil {
-		panic(err)
+func get() ([]byte, error){
+	// cbs = circuit breaker setting
+	cbs := gobreaker.Settings{
+		Name: "cl",
+		Interval: 5* time.Second,
+		Timeout: 7* time.Second,
+		ReadyToTrip: func(counts gobreaker.Counts) bool{
+			failurRatio := float64(counts.TotalFailures) / float64(counts.Requests)
+			return counts.Requests >= 3 && failurRatio >= 0.6
+		},
+		OnStateChange: func(_ string, from, to gobreaker.State) {
+			log.Println("state changed from", from.String(), "to", to.String())
+		},
 	}
-	client := http.Client{
-		Timeout: 1 * time.Second,
+	cb := gobreaker.NewCircuitBreaker(cbs)
+
+	dataByte, err := cb.Execute(func() (interface{}, error) {
+		response, err := http.Get("http://localhost:8082/hello")
+		if err != nil {
+			return nil, err
+		}
+		defer response.Body.Close()
+	
+		log.Println(response.Status)
+	
+		dataByte, err := io.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+	
+		fmt.Println(string(dataByte))
+		if response.StatusCode == http.StatusInternalServerError{
+			return nil, errors.New("internal server error")
+		}
+		return dataByte, nil
+	})
+
+	if err != nil {
+		return nil, err 
 	}
 
-	response, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	dataByte, err := io.ReadAll(response.Body)
-	if err != nil {
-		panic(err)
-	}
-	var r Response
-	err = json.Unmarshal(dataByte, &r)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(r)
+	return dataByte.([]byte), nil
+	//log.Println(body, err)
 }
